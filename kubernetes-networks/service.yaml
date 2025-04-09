@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app.kubernetes.io/name: nginx
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8000
+    targetPort: http-web-svc
+  clusterIP: 10.0.0.251
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 80.85.154.26

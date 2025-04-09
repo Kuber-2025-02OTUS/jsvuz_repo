@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: homework
+  labels:
+    app.kubernetes.io/name: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: ckeck
+                operator: In
+                values:
+                - homework
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: web-server
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 8000 #running the web server on port 8000
+          name: http-web-svc
+        volumeMounts:
+        - name: homeworkdir
+          mountPath: /homework/ #creating a folder homework in the container
+        command: ['sh', '-c', 'ls -la /homework'] #displaying the contents of the homework folder
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "rm /homework/index.html"]
+        readinessProbe:
+          httpGet:
+            path: /index.html
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      initContainers:
+      - name: init-myservice
+        image: busybox:1.28
+        volumeMounts:
+        - name: homeworkdir
+          mountPath: /init
+        command: ['sh', '-c', 'echo>/init/index.html'] #generating file index.html
+      volumes:
+      - name: homeworkdir
+        emptyDir: {}
+  strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 1
