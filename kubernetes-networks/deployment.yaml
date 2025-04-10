@@ -20,7 +20,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: ckeck
+              - key: check
                 operator: In
                 values:
                 - homework

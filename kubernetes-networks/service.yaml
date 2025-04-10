@@ -10,9 +10,4 @@ spec:
     protocol: TCP
     port: 8000
     targetPort: http-web-svc
-  clusterIP: ""
   type: LoadBalancer
-status:
-  loadBalancer:
-    ingress:
-    - ip: 192.168.49.2
