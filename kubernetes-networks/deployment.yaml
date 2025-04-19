@@ -29,7 +29,7 @@ spec:
       - name: web-server
         image: nginx:1.14.2
         ports:
-        - containerPort: 8000 #running the web server on port 8000
+        - containerPort: 80 #running the web server on port 8000
           name: http-web-svc
         volumeMounts:
         - name: homeworkdir
@@ -42,7 +42,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /index.html
-            port: 8000
+            port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
       initContainers:
