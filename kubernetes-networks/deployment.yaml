@@ -4,7 +4,7 @@ metadata:
   name: nginx-deployment
   namespace: homework
   labels:
-    app.kubernetes.io/name: nginx
+    app: nginx
 spec:
   replicas: 3
   selector:
