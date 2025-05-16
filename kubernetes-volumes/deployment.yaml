@@ -15,25 +15,29 @@ spec:
       labels:
         app: nginx
     spec:
-#      affinity:
-#        podAffinity:
-#          requiredDuringSchedulingIgnoredDuringExecution:
-#          - labelSelector:
-#              matchExpressions:
-#              - key: check
-#                operator: In
-#                values:
-#                - homework
-#            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: web-server
         image: nginx:1.14.2
         ports:
         - containerPort: 80 #running the web server on port 8000
           name: http-web-svc
+        env:
+        - name: DB_USR
+          valueFrom:
+            configMapKeyRef:
+              name: kuber-cm
+              key: dbuser
+        - name: DB_PASS
+          valueFrom:
+            configMapKeyRef:
+              name: kuber-cm
+              key: dbpass
         volumeMounts:
         - name: homeworkdir
           mountPath: /homework #creating a folder homework in the container
+        - name: config
+          mountPath: "/homework/conf"
+          readOnly: true
         readinessProbe:
           exec:
             command: ['cat','/homework/index.html']
@@ -43,16 +47,23 @@ spec:
           preStop:
             exec:
               command: ['/bin/sh','-c','rm /homework/index.html']
-      initContainers:
-      - name: init-myservice
-        image: busybox:1.28
-        command: ['sh', '-c', 'echo>/init/index.html'] #generating file index.html
-        volumeMounts:
-        - name: homeworkdir
-          mountPath: /init
+#      initContainers:
+#      - name: init-myservice
+#        image: busybox:1.28
+#        command: ['sh', '-c', 'echo>/init/index.html'] #generating file index.html
+#        volumeMounts:
+#        - name: homeworkdir
+#          mountPath: /init
       volumes:
       - name: homeworkdir
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: kuber-pvc
+      - name: config
+        configMap:
+          name: kuber-cm
+          items:
+          - key: "dbconfig"
+            path: "dbconfig"
   strategy:
    type: RollingUpdate
    rollingUpdate:
