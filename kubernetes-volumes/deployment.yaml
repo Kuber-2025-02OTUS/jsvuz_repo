@@ -47,13 +47,13 @@ spec:
           preStop:
             exec:
               command: ['/bin/sh','-c','rm /homework/index.html']
-#      initContainers:
-#      - name: init-myservice
-#        image: busybox:1.28
-#        command: ['sh', '-c', 'echo>/init/index.html'] #generating file index.html
-#        volumeMounts:
-#        - name: homeworkdir
-#          mountPath: /init
+      initContainers:
+      - name: init-myservice
+        image: busybox:1.28
+        command: ['sh', '-c', 'echo>/init/index.html'] #generating file index.html
+        volumeMounts:
+        - name: homeworkdir
+          mountPath: /init
       volumes:
       - name: homeworkdir
         persistentVolumeClaim:
