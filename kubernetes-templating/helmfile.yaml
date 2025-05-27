@@ -1,0 +1,40 @@
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+  # Продакшен-кластер Kafka
+  - name: kafka-prod
+    namespace: prod
+    chart: bitnami/kafka
+    version: 25.0.0
+    values:
+      - kafka:
+          replicaCount: 5
+          image:
+            tag: 3.5.2
+          service:
+            type: ClusterIP
+          auth:
+            clientProtocol: SASL_PLAINTEXT
+            interBrokerProtocol: SASL_PLAINTEXT
+            sasl:
+              enabled: true
+              mechanisms: [PLAIN]
+              users:
+                - name: admin
+                  password: "password"
+
+  # Dev-кластер Kafka
+  - name: kafka-dev
+    namespace: dev
+    chart: bitnami/kafka
+    version: ^25.0.0
+    values:
+      - kafka:
+          replicaCount: 1
+          auth:
+            clientProtocol: PLAINTEXT
+            interBrokerProtocol: PLAINTEXT
+            sasl:
+              enabled: false
