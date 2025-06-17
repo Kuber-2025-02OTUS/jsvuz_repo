@@ -1,0 +1,19 @@
+promtail:
+  enabled: true
+
+  config:
+    configMap:
+      overrideName: promtail-custom-config
+
+  tolerations:
+    - key: "node-role.kubernetes.io/infra"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  extraVolumes:
+    - name: run
+      emptyDir: {}
+
+  extraVolumeMounts:
+    - name: run
+      mountPath: /run

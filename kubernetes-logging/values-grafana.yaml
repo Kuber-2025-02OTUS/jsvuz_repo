@@ -1,0 +1,47 @@
+grafana:
+  enabled: true
+
+  nodeSelector:
+    node-role.kubernetes.io/infra: "true"
+
+  tolerations:
+    - key: "node-role.kubernetes.io/infra"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: yc-network-hdd
+
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki-gateway.loki.svc.cluster.local/loki
+          isDefault: true
+
+  adminUser: admin
+  adminPassword: admin
+
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards
+
+  dashboards:
+    default:
+      loki-overview:
+        json: |
+          {{- $.Files.Get "dashboards/11293_rev3.json" | nindent 10 }}
